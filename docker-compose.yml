@@ -7,7 +7,7 @@ services:
       command: --authentication_policy=mysql_native_password --default_authentication_plugin=mysql_native_password --max_connections=1024 --secure-file-priv=/var/lib/mysql --disable-log-bin --lower_case_table_names=1
       restart: always
       ports: 
-          - 3307:3306
+          - 3306:3306
       volumes:
           - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
           - ./data/mysql:/var/lib/mysql
