@@ -1,0 +1,229 @@
+{% extends "wallpaperfactory/base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>Студия дизайнерских обоев</title>
+{% endblock %}
+
+{% block content %}
+
+{{ entries | json_script:"entries" }}
+{{ tags | json_script:"tags" }}
+{{ materials | json_script:"materials" }}
+{{ breadcrumbs | json_script:"breadcrumbs-payload" }}
+{{ entries_per_page | json_script:"entries_per_page" }}
+{{ current_page | json_script:"current_page" }}
+{{ pages_total | json_script:"pages_total" }}
+
+<div class="content-wrapper" id="content">
+    {% include "wallpaperfactory/navbar.html" %}
+    {% include "wallpaperfactory/breadcrumbs.html" %}
+
+    <div id="app" class="store-content">
+        <div class="tags">
+            <template v-for="tag in tags">
+                <input :checked="tag.tag in filter_tags" v-on:input="tag_changed(tag.tag); apply_filters()"
+                    type="checkbox" name="" :id="'tag-'+tag.tag" class="tag">
+                <label :for="'tag-'+tag.tag" v-text="tag.displaytag" class="tag"></label>
+            </template>
+        </div>
+
+        <div class="content">
+            <div class="main-area">
+                <div class="store-filters round">
+                    <div class="store-filters-title-container">
+                        <h3>Фильтр</h3>
+                        <a href="/premade">Сбросить</a>
+                    </div>
+
+                    <div class="filter-category">
+                        <input style="width: 100%;" placeholder="Поиск..." v-model="filter_search" name="filter_search"
+                            id="filter_search" autocomplete="off" type="numeric">
+                    </div>
+
+                    <div class="filter-category">
+                        <h4>Цена, ₽</h4>
+                        <p class="price-filter">
+                            <input v-model="filter_price_from" name="price_from" id="price_from" autocomplete="off"
+                                type="numeric" pattern="[0-9&thinsp;]*">
+                            <span style="text-align: center;">-</span>
+                            <input v-model="filter_price_to" name="price_to" id="price_to" autocomplete="off"
+                                type="numeric" pattern="[0-9&thinsp;]*">
+                        </p>
+                    </div>
+
+                    <div class="filter-category">
+                        <h4>Особенности</h4>
+                        <p><input v-model="filter_full_picture" type="checkbox" name="full_pic" id="full_pic"><label
+                                for="full_pic">Цельное изображение</label></p>
+                    </div>
+
+                    <button v-on:click="apply_filters" style="width: 100%;">Применить фильтры</button>
+
+                </div>
+                <div class="store-elements-container">
+
+                    <template v-for="entry in entries">
+                        <a :href="'/premade/' + entry.id" class="wallpaper-entry">
+                            <img class="entry-img" :src="entry.main_image" alt="">
+                            <div class="entry-info-container">
+                                <p class="entry-name"><span v-text="entry.name"> </span><span class="pale unsel"
+                                        style="margin: 0 6px;"></span></p>
+                                <p class="entry-price" v-text="entry.price + ' ₽'"></p>
+                                <p class="entry-description" v-text="entry.description"></p>
+
+                                <div class="entry-tags">
+                                    <template v-for="tag in entry.tags">
+                                        <p v-text="tag.displaytag"></p>
+                                    </template>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <template v-for="p in pages_total">
+                <a v-bind:class="{ 'current-page': current_page == p-1 }" class="page-link-btn"
+                    :href="get_uri_with_filters(p-1)" v-text="p"></a>
+            </template>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+{{ block.super }}
+{% render_bundle 'breadcrumbs' %}
+{% render_bundle 'store' %}
+
+<script>
+
+    const app = Vue.createApp({
+        // compilerOptions: {
+        //     delimiters: ["[[", "]]"]
+        // },
+        data() {
+            return {
+                entries: parsejson("entries"),
+                tags: parsejson("tags"),
+                materials: parsejson("materials"),
+                entries_per_page: parsejson("entries_per_page"),
+                pages_total: parsejson("pages_total"),
+                current_page: parsejson("current_page"),
+
+                filter_price_from: 0,
+                filter_price_to: 0,
+                filter_materials: [],
+                filter_tags: [],
+                filter_full_picture: false,
+                filter_search: "",
+
+                params: {},
+
+                page_buttons_count: 5,
+            }
+        },
+        methods: {
+            filter_checkbox_checked: function (name) {
+                let value = document.getElementById('mat-' + name).checked;
+                if (value) {
+                    this.filter_materials.push(name);
+                } else {
+                    this.filter_materials = this.filter_materials.filter(
+                        function (value, index, arr) {
+                            return value != name
+                        }
+                    );
+                }
+                this.filter_materials = [...new Set(this.filter_materials)];
+            },
+
+            sync_checkboxes_with_filters() {
+                this.filter_tags.forEach(tag => {
+                    document.getElementById("tag-" + tag).checked = true;
+                });
+                this.filter_materials.forEach(mat => {
+                    document.getElementById("mat-" + mat).checked = true;
+                });
+            },
+
+            tag_changed: function (name) {
+                console.log('tag-' + name);
+                let value = document.getElementById('tag-' + name).checked;
+                if (value) {
+                    this.filter_tags.push(name);
+                } else {
+                    this.filter_tags = this.filter_tags.filter(
+                        function (value, index, arr) {
+                            return value != name
+                        }
+                    );
+                }
+                this.filter_tags = [...new Set(this.filter_tags)];
+            },
+
+            get_uri_with_filters: function (page) {
+                const params = new URLSearchParams({
+                    price_from: this.filter_price_from,
+                    price_to: this.filter_price_to,
+                    filter_tags: this.filter_tags,
+                    filter_materials: this.filter_materials,
+                    filter_full_picture: this.filter_full_picture,
+                    filter_search: this.filter_search,
+                    'page': page
+                });
+                return '/premade?' + params.toString();
+            },
+
+            apply_filters: function () {
+                location.href = this.get_uri_with_filters(0);
+            },
+
+            marked: function (data) {
+                return marked.marked(data);
+            },
+        },
+
+        created: function () {
+            let search = location.search.substring(1);
+            try {
+                this.params = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+            } catch (error) { }
+
+            if (!this.params) {
+                this.params = {
+                    price_from: 0,
+                    price_to: 0,
+                    filter_tags: [],
+                    filter_materials: [],
+                    filter_full_picture: false,
+                    filter_search: "",
+                };
+            }
+
+            if (!this.params.filter_tags) { this.params.filter_tags = []; }
+            else { this.params.filter_tags = String(this.params.filter_tags).split("%2C"); }
+            if (!this.params.filter_materials) { this.params.filter_materials = []; }
+            else { this.params.filter_materials = String(this.params.filter_materials).split("%2C"); }
+            if (!this.params.filter_search) { this.params.filter_search = ""; }
+            if (!this.params.filter_full_picture) { this.params.filter_full_picture = false; }
+
+            this.params.filter_tags = [...new Set(this.params.filter_tags)];
+            this.params.filter_materials = [...new Set(this.params.filter_materials)];
+
+            this.sync_checkboxes_with_filters();
+        },
+        created: function () {
+            console.log(this.tags);
+        }
+    });
+    app.mount("#app");
+</script>
+{% endblock %}
+
+{% endblock %}

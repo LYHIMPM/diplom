@@ -1,0 +1,173 @@
+{% extends "wallpaperfactory/base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>Студия дизайнерских обоев</title>
+{% endblock %}
+
+{% block content %}
+
+{{ breadcrumbs | json_script:"breadcrumbs-payload" }}
+{{ entry | json_script:"entry" }}
+{{ material_tags | json_script:"material_tags" }}
+{{ materials | json_script:"materials" }}
+
+<div class="content-wrapper" id="content">
+    {% include "wallpaperfactory/navbar.html" %}
+    {% include "wallpaperfactory/breadcrumbs.html" %}
+
+    <div class="content" id="app">
+
+        <div class="entry-bg">
+
+            <img style="width: 100%;" :src="entry.main_image" alt="">
+
+            <div class="info-section">
+                <h2 v-text="'Обои ' + entry.name"></h2>
+
+                <div>
+                    <p v-text="entry.description"></p>
+                </div>
+
+                <div class="info-column">
+                    <div>
+                        <strong>Сколько квадратных метров обоев вам нужно?</strong>
+                        <input v-model="m_sq_count"
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                            name="m_sq_count" id="m_sq_count" autocomplete="off" type="numeric"
+                            pattern="[0-9&thinsp;]*">
+                    </div>
+
+                    <div>
+                        <p>Дизайн <span v-text="entry.name"></span>: <strong> <span v-text="entry.price"></span>
+                                ₽</strong></p>
+                        <p>Материал <span v-text="current_material.displayname"></span>: <strong><span
+                                    v-text="current_material.price"></span> ₽ / м. кв.</strong></p>
+                        <p>Площадь: <span v-text="m_sq_count"></span> кв. м.</p>
+                    </div>
+
+                    <div>
+                        <h4>Подбор материала</h4>
+                        <div class="material-select">
+                            <div class="container-h-1 material-tags-container">
+                                <template v-for="mtag in material_tags">
+                                    <div class="material-tag" v-bind:class="{ 'active': is_mat_tag_selected(mtag.id) }"
+                                        v-on:click="sel_or_unsel_material_tag(mtag.id)">
+                                        <p v-text="mtag.displayname"></p>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="container-h-1 materials-container">
+                                <template v-for="mat in materials_by_params">
+                                    <div class="material-entry"
+                                        v-bind:class="{ 'active': materials[current_material_i].id == mat.id }"
+                                        v-on:click="sel_mat(mat.id)">
+                                        <img :src="mat.image_url" alt="">
+                                        <p v-text="mat.displayname"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="price-section">
+                        <h2>Итоговая цена: <span class="price" v-text="calc_price + ' ₽'"></span></h2>
+                        <button v-on:click="order" v-if="m_sq_count >0">Заказать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+{{ block.super }}
+{% render_bundle 'breadcrumbs' %}
+{% render_bundle 'entry_details' %}
+
+<script>
+    const app = Vue.createApp({
+        // compilerOptions: {
+        //     delimiters: ["[[", "]]"]
+        // },
+        data() {
+            return {
+                entry: parsejson("entry"),
+                material_tags: parsejson("material_tags"),
+                materials: parsejson("materials"),
+                m_sq_count: 1,
+                roll_width: 53,
+                meters_in_roll: 10,
+                current_material_i: 0,
+                selected_mat_tags: [],
+            }
+        },
+        methods: {
+            get_create_order_uri: function () {
+                const params = new URLSearchParams({
+                    'm_sq_count': this.m_sq_count,
+                    'entry': this.entry.id,
+                    'material': this.current_material.id
+                });
+                return '/createorder?' + params.toString();
+            },
+
+            order: function () {
+                location.href = this.get_create_order_uri();
+            },
+
+            sel_mat: function (mat_id) {
+                for (let i = 0; i < this.materials.length; i++) {
+                    const mat = this.materials[i];
+                    if (mat.id == mat_id) {
+                        this.current_material_i = i;
+                        return;
+                    }
+                }
+            },
+            is_mat_tag_selected: function (tag_id) {
+                return this.selected_mat_tags.includes(tag_id);
+            },
+            sel_or_unsel_material_tag: function (tag_id) {
+                if (this.selected_mat_tags.includes(tag_id)) {
+                    this.selected_mat_tags = this.selected_mat_tags.filter(function (value, index, arr) {
+                        return value != tag_id;
+                    });
+                } else {
+                    this.selected_mat_tags.push(tag_id);
+                }
+            },
+        },
+        computed: {
+            materials_by_params: function () {
+                let materials = [];
+                if (this.selected_mat_tags.length == 0) {
+                    return this.materials;
+                }
+                this.materials.forEach(mat => {
+                    for (let i = 0; i < this.selected_mat_tags.length; i++) {
+                        const tag = this.selected_mat_tags[i];
+                        if (mat.tags.includes(tag)) {
+                            materials.push(mat);
+                            break;
+                        }
+                    }
+                });
+                return materials;
+            },
+            current_material: function () {
+                return this.materials[this.current_material_i];
+            },
+            calc_price: function () {
+                return this.entry.price * this.m_sq_count;
+            }
+        }
+    });
+    app.mount("#app");
+</script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "wallpaperfactory/base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>Студия дизайнерских обоев</title>
+{% endblock %}
+
+{% block content %}
+
+{{ breadcrumbs | json_script:"breadcrumbs-payload" }}
+
+<div class="content-wrapper" id="content">
+    {% include "wallpaperfactory/navbar.html" %}
+    {% include "wallpaperfactory/breadcrumbs.html" %}
+    
+    <div class="content" id="app">
+        {% include "wallpaperfactory/profile/profile_tabs.html" %}
+
+        <template v-if="sel == null">
+            <div class="chats">
+                <template v-for="i in 3">
+                    <div v-on:click="selectChat" class="chat-entry">
+                        <img v-on:click.native="selectChat(i)" src="{% static 'wallpaperfactory/img/user_placeholder.png' %}" alt="" class="avatar">
+                        <div class="chat-info">
+                            <div class="chat-title">
+                                <h5>Пользователь 1234</h5>
+                                <p>Вчера</p>
+                            </div>
+                            <p>Сообщение</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+        <template v-else>
+            <div class="conversation">
+                <div class="chat-title">
+                    <p v-on:click="selectChat(null)" class="back">< Назад</p>
+                    <div>
+                        <h5>Пользователь 1234</h5>
+                        <p>Был в сети вчера</p>
+                    </div>
+                    <img src="{% static 'wallpaperfactory/img/user_placeholder.png' %}" alt="" class="avatar">
+                </div>
+                <div class="messages">
+                        <template v-for="i in 15">
+                        <div class="msg" :class="{anothers: i % 2}">
+                            <img src="{% static 'wallpaperfactory/img/user_placeholder.png' %}" alt="" class="avatar">
+                            <div class="msg-body">
+                                <h5 v-if="i % 2" class="msg-title">Вы</h5>
+                                <h5 v-else class="msg-title">Пользователь 1234</h5>
+                                <p class="msg-text">Сообщение</p>
+                            </div>
+                        </div>
+                        </template>
+                </div>
+                <div class="message-input">
+                    <form onsubmit="return false">
+                        <input autofocus type="text" name="" placeholder="Ваше сообщение..." id="">
+                        <input type="submit" value=">">
+                    </form>
+                </div>
+            </div>
+        </template>
+        
+    </div>
+</div>
+
+{% block scripts %}
+    {{ block.super }}
+    {% render_bundle 'breadcrumbs' %}
+    {% render_bundle 'profile_chats' %}
+    <script>
+        const app = Vue.createApp({
+            // compilerOptions: {
+            //     delimiters: ["[[", "]]"]
+            // },
+            data() {
+                return {
+                    sel: null,
+                }
+            },
+            methods: {
+                selectChat: function(id) {
+                    this.sel = id;
+                }
+            }
+        });
+        app.mount("#app");
+    </script>
+{% endblock %}
+
+{% endblock %}  

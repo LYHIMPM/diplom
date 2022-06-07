@@ -1,0 +1,58 @@
+:root {
+    /* --bg-color: #fff7e2;
+    --text-color-1: #3e3a33; */
+
+    --main-color-1: #fff;
+    --main-color-2: #f5f7f9;
+
+    --second-color-3: #7fe0b3;
+    --second-color-3-hover: #97eec6;
+    --second-color-3-active: #54ab82;
+
+    --text-color-1: #31394c;
+    --text-color-2: #6f7688;
+    --text-color-3: #ffffff;
+
+    --text-color-1-hover: var(--second-color-3);
+    --text-color-pale-1: #08080869;
+
+    --entries-gap: 16px;
+    --rounding-radius: 3px;
+}
+
+.login-window h2 {
+    margin: 0;
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+.login-window {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background-color: var(--main-color-1);
+    width: 400px;
+    padding: 40px 30px;
+}
+
+.no-account {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.login-window input {
+    width: 100%;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+}
+
+.form-fields p {
+    margin: 5px 0;
+}

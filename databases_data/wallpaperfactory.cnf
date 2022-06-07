@@ -1,0 +1,7 @@
+[client]
+database = wallpaperfactory
+user = wallpaperfactory
+password = 4dCE=Ss=6ed17i0w
+default-character-set = utf8
+host = db.outbreak.space
+port = 3306

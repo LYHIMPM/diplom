@@ -1,0 +1,104 @@
+{
+  "status": "done",
+  "assets": {
+    "js/main.js": {
+      "name": "js/main.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\main.js"
+    },
+    "js/profile_accounting.js": {
+      "name": "js/profile_accounting.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\profile_accounting.js"
+    },
+    "js/profile_chats.js": {
+      "name": "js/profile_chats.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\profile_chats.js"
+    },
+    "js/profile_info.js": {
+      "name": "js/profile_info.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\profile_info.js"
+    },
+    "js/profile_orders.js": {
+      "name": "js/profile_orders.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\profile_orders.js"
+    },
+    "js/entry_details.js": {
+      "name": "js/entry_details.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\entry_details.js"
+    },
+    "js/order.js": {
+      "name": "js/order.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\order.js"
+    },
+    "js/store.js": {
+      "name": "js/store.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\store.js"
+    },
+    "js/breadcrumbs.js": {
+      "name": "js/breadcrumbs.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\breadcrumbs.js"
+    },
+    "js/custom.js": {
+      "name": "js/custom.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\custom.js"
+    },
+    "js/npm.vue.js": {
+      "name": "js/npm.vue.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\npm.vue.js"
+    },
+    "js/vendors.js": {
+      "name": "js/vendors.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\vendors.js"
+    }
+  },
+  "chunks": {
+    "main": [
+      "js/vendors.js",
+      "js/main.js"
+    ],
+    "profile_accounting": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/profile_accounting.js"
+    ],
+    "profile_chats": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/profile_chats.js"
+    ],
+    "profile_info": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/profile_info.js"
+    ],
+    "profile_orders": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/profile_orders.js"
+    ],
+    "entry_details": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/entry_details.js"
+    ],
+    "order": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/order.js"
+    ],
+    "store": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/store.js"
+    ],
+    "breadcrumbs": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/breadcrumbs.js"
+    ],
+    "custom": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/custom.js"
+    ]
+  }
+}

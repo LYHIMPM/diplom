@@ -1,0 +1,88 @@
+{% extends "wallpaperfactory/base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>Студия дизайнерских обоев</title>
+{% endblock %}
+
+{% block content %}
+
+{{ breadcrumbs | json_script:"breadcrumbs-payload" }}
+{{ order | json_script:"order" }}
+
+<div class="content-wrapper" id="content">
+    {% include "wallpaperfactory/navbar.html" %}
+    {% include "wallpaperfactory/breadcrumbs.html" %}
+    
+    <div class="content">
+        <h2>Оформление заказа</h2>
+        <div class="order-entry">
+            <div>
+                <img :src="order.entry.main_image" alt="">
+            </div>
+            <div>
+                <h3 v-text="'Обои ' + order.entry.name"></h3>
+                <p>
+                    <span>Материал: </span>
+                    <strong><span v-text="order.material.displayname"></span></strong>
+                </p>
+                <p>
+                    <span>Количество квадратных метров: </span>
+                    <strong><span v-text="order.m_sq_count"></span></strong>
+                </p>
+            </div>
+        </div>
+
+        <div class="order-data">
+            <div class="contact">
+                <h3>1. Контактные данные</h3>
+    
+                <div class="contact-credentials">
+                    <div>
+                        <input type="text" name="" id="" placeholder="Имя">
+                        <input type="text" name="" id="" placeholder="Фамилия">
+                    </div>
+                    <div>
+                        <input type="email" name="" id="" placeholder="Email">
+                    </div>
+                </div>
+            </div>
+    
+            <div class="address">
+                <h3>2. Адрес доставки</h3>
+    
+                <input type="text" name="" id="" placeholder="Город, улица, дом" style="width: 100%">
+            </div>
+    
+            <div class="order-paymenttype">
+                <h3>3. Способ оплаты</h3>
+                
+                <div>
+                    <div>
+                        <input type="radio" name="paymenttype" id="paymenttype-nal">
+                        <label for="paymenttype-nal">Наличными или картой при получении</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="paymenttype" id="paymenttype-online">
+                        <label for="paymenttype-online">Банковской картой онлайн</label>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="order-checkout">
+                <h3>Итого к оплате: {{ order.price }}</h3>
+                <button style="float: right; width: 200px">Оформить заказ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+    {{ block.super }}
+    {% render_bundle 'breadcrumbs' %}
+    {% render_bundle 'order' %}
+{% endblock %}
+
+{% endblock %}

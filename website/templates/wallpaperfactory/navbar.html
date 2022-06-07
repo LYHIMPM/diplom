@@ -1,0 +1,22 @@
+<nav>
+    <div class="logo">
+        <h1>ASTRA</h1>
+        <p>ДИЗАЙНЕРСКИЕ ОБОИ</p>
+    </div>
+    <div class="navbar-links">
+        <a href="/premade" class="navbar-link {% if current_page_name == 'premade' %}current{% endif %}">Готовые обои</a>
+        <a href="/custom" class="navbar-link {% if current_page_name == 'custom' %}current{% endif %}">Хочу свой дизайн!</a>
+        <a href="/about" class="navbar-link {% if current_page_name == 'about' %}current{% endif %}">О нас</a>
+        <!-- <a href="/sales" class="navbar-link {% if current_page_name == 'sales' %}current{% endif %}">Акции</a> -->
+    </div>
+    <div>
+        <div class="login-btn">
+            {% if request.user.is_authenticated %}
+                <a href="/profile" class="navbar-link {% if current_page_name == 'profile' %}current{% endif %}">{{ request.user.username }}</a>
+            {% else %}
+                <a href="/login" class="navbar-link {% if current_page_name == 'login' %}current{% endif %}">Вход</a>
+                <img src="/static/wallpaperfactory/img/loginicon.png" alt="">
+            {% endif %}
+        </div>
+    </div>
+</nav>
