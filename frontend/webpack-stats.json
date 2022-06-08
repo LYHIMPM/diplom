@@ -41,6 +41,10 @@
       "name": "js/custom.js",
       "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\custom.js"
     },
+    "js/login.js": {
+      "name": "js/login.js",
+      "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\login.js"
+    },
     "js/npm.vue.js": {
       "name": "js/npm.vue.js",
       "path": "H:\\college\\diplom\\program\\wallpaperfactory\\website\\static\\webpack_bundles\\js\\npm.vue.js"
@@ -99,6 +103,11 @@
       "js/npm.vue.js",
       "js/vendors.js",
       "js/custom.js"
+    ],
+    "login": [
+      "js/npm.vue.js",
+      "js/vendors.js",
+      "js/login.js"
     ]
   }
 }

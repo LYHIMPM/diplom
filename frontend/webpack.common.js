@@ -21,7 +21,7 @@ module.exports = {
         breadcrumbs: "./src/scripts/breadcrumbs.js",
         // about: "./src/scripts/about.js",
         custom: "./src/scripts/custom.js",
-        // login: "./src/scripts/login.js",
+        login: "./src/scripts/login.js",
         // register: "./src/scripts/register.js",
         // sales: "./src/scripts/sales.js",
     },

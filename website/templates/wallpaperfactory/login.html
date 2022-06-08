@@ -5,7 +5,6 @@
 {% block head %}
 {{ block.super }}
 <title>Вход | Студия дизайнерских обоев</title>
-<link rel="stylesheet" href="{% static 'wallpaperfactory/css/login.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -47,6 +46,7 @@
 {% block scripts %}
     {{ block.super }}
     {% render_bundle 'breadcrumbs' %}
+    {% render_bundle 'login' %}
 {% endblock %}
 
 {% endblock %}

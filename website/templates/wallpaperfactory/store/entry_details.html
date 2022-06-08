@@ -162,7 +162,7 @@
                 return this.materials[this.current_material_i];
             },
             calc_price: function () {
-                return this.entry.price * this.m_sq_count;
+                return this.entry.price + (this.current_material.price * this.m_sq_count);
             }
         }
     });

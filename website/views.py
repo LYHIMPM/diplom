@@ -222,7 +222,7 @@ def login_view(request: HttpRequest):
             email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
 
-            user = authenticate(request, username=email, password=password)
+            user = authenticate(request, email=email, password=password)
 
             if user is not None:
                 login(request, user)
@@ -270,7 +270,7 @@ def create_order(request: HttpRequest):
 
 
 def logout_view(request: HttpRequest):
-    logout()
+    logout(request)
     return redirect("/")
 
 
