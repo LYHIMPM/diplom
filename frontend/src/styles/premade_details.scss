@@ -89,3 +89,29 @@ h2 {
     flex-direction: row;
     justify-content: space-between;
 }
+
+.rooms-calc {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0;
+    gap: 5px;
+    p {
+        margin: 0;
+    }
+
+    .calculator-room-entry {
+        display: flex;
+        gap: 10px;
+
+        align-items: center;
+
+        .remove {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+    
+    input {
+        width: 110px;
+    }
+}

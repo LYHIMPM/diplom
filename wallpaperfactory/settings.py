@@ -94,11 +94,10 @@ DATABASES = {
         'NAME': 'wallpaperfactory',
         'USER': 'wallpaperfactory',
         'PASSWORD': '4dCE=Ss=6ed17i0w',
-        'HOST': 'db.outbreak.space',
+        'HOST': '91.210.171.149',
         'PORT': '3306',
         # 'OPTIONS': {
         #     # 'read_default_file': os.path.join(BASE_DIR, 'databases_data', 'wallpaperfactory.cnf'),
-
         # },
     },
 }

@@ -1,6 +1,6 @@
 from django.db.models import Avg, Count, Max, Min, Sum
 from django.db.models.query_utils import Q
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegistrationForm, UpdateAccountInfoForm
 from django.views.decorators.csrf import csrf_exempt
@@ -50,11 +50,11 @@ def premade(request: HttpRequest):
 
     pages_total = int(math.ceil(len(entries_set) / ENTRIES_PER_PAGE))
 
-    if page != 0:
-        breadcrumbs.append((f"Стр {page}", f"/premade?page={page}"))
 
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("Готовые обои", "/premade"))
+    if page != 0:
+        breadcrumbs.append((f"Стр {page}", f"/premade?page={page}"))
     return render(request, "wallpaperfactory/store/store.html", {
         "tags": [tag.json() for tag in Tag.objects.all()],
         "entries": [e.json() for e in entries_to_display],

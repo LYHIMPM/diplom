@@ -15,12 +15,12 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script src="https://unpkg.com/vue@next"></script>
+    <script>function getCSRFToken() {return '{{ csrf_token }}';}</script>
     <script src="{% static 'wallpaperfactory/js/main.js' %}"></script>
     {% block head %}
     {% endblock %}
 </head>
 <body>
-    <script>function get_csrf_token() {return '{{ csrf_token }}';}</script>
     {% block content %}
     {% endblock %}
 </body>

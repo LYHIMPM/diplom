@@ -24,7 +24,7 @@ async function apiRequest(url = '', data = {}, method='POST') {
         body: JSON.stringify(data) // body data type must match "Content-Type" header
     });
     return await response.json(); // parses JSON response into native JavaScript objects
-};
+}
 
 function parsejson(el) {return JSON.parse(document.getElementById(el).innerHTML);}
 

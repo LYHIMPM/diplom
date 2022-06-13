@@ -12,11 +12,11 @@
 {{ breadcrumbs | json_script:"breadcrumbs-payload" }}
 {{ order | json_script:"order" }}
 
-<div class="content-wrapper" id="content">
+<div class="content-wrapper">
     {% include "wallpaperfactory/navbar.html" %}
     {% include "wallpaperfactory/breadcrumbs.html" %}
     
-    <div class="content">
+    <div class="content" id="app">
         <h2>Оформление заказа</h2>
         <div class="order-entry">
             <div>
@@ -41,11 +41,11 @@
     
                 <div class="contact-credentials">
                     <div>
-                        <input type="text" name="" id="" placeholder="Имя">
-                        <input type="text" name="" id="" placeholder="Фамилия">
+                        <input v-model="first_name" type="text" placeholder="Имя">
+                        <input v-model="last_name" type="text" placeholder="Фамилия">
                     </div>
                     <div>
-                        <input type="email" name="" id="" placeholder="Email">
+                        <input v-model="email" type="email" placeholder="Email">
                     </div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
             <div class="address">
                 <h3>2. Адрес доставки</h3>
     
-                <input type="text" name="" id="" placeholder="Город, улица, дом" style="width: 100%">
+                <input v-model="address" type="text" placeholder="Город, улица, дом" style="width: 100%">
             </div>
     
             <div class="order-paymenttype">
@@ -61,11 +61,11 @@
                 
                 <div>
                     <div>
-                        <input type="radio" name="paymenttype" id="paymenttype-nal">
+                        <input v-model="paymenttype" type="radio" value="0" name="paymenttype" id="paymenttype-nal">
                         <label for="paymenttype-nal">Наличными или картой при получении</label>
                     </div>
                     <div>
-                        <input type="radio" name="paymenttype" id="paymenttype-online">
+                        <input v-model="paymenttype" type="radio" value="1" name="paymenttype" id="paymenttype-online">
                         <label for="paymenttype-online">Банковской картой онлайн</label>
                     </div>
                 </div>
@@ -73,16 +73,47 @@
     
             <div class="order-checkout">
                 <h3>Итого к оплате: {{ order.price }}</h3>
-                <button style="float: right; width: 200px">Оформить заказ</button>
+                <button @click="createOrder" style="float: right; width: 200px">Оформить заказ</button>
             </div>
         </div>
     </div>
 </div>
 
+{% endblock %}
+
 {% block scripts %}
     {{ block.super }}
     {% render_bundle 'breadcrumbs' %}
     {% render_bundle 'order' %}
-{% endblock %}
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    order: parsejson("order"),
+                    first_name: "{{ request.user.first_name }}",
+                    last_name: "{{ request.user.last_name }}",
+                    email: "{{ request.user.email }}",
+                    address: "",
+                    paymenttype: 0
+                }
+            },
+            methods: {
+                getOrderData: function() {
+                    return {
+                        order: this.order,
+                        first_name: this.first_name,
+                        last_name: this.last_name,
+                        email: this.email,
+                        address: this.address,
+                        paymenttype: this.paymenttype
+                    }
+                },
 
+                createOrder: function() {
+                    let p = makeOrder(this.getOrderData());
+                    p.then(console.log);
+                },
+            }
+        }).mount("#app");
+    </script>
 {% endblock %}

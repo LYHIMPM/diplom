@@ -13,7 +13,7 @@ async function apiRequest(url = '', data = {}, method='POST') {
         credentials: 'same-origin', // include, *same-origin, omit
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
+            'X-CSRFToken': getCSRFToken(),
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         redirect: 'follow', // manual, *follow, error
@@ -22,5 +22,11 @@ async function apiRequest(url = '', data = {}, method='POST') {
     });
     return await response.json(); // parses JSON response into native JavaScript objects
 };
+
+
+async function makeOrder(orderData) {
+    return await apiRequest("/api/makeOrder", orderData);
+}
+
 
 function parsejson(el) {return JSON.parse(document.getElementById(el).innerHTML);}

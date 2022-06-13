@@ -84,6 +84,11 @@ class Order(models.Model):
         (2, "Завершён"),
         (3, "Отменён"),
     ])
+    paymenttype = models.IntegerField(verbose_name="Способ оплаты", choices=[
+        (0, "Наличными или картой при получении"),
+        (1, "Банковской картой онлайн"),
+    ])
+    address = models.TextField(verbose_name="Адрес")
     price = models.FloatField(verbose_name="Полная цена")
     paid = models.FloatField(verbose_name="Сколько оплачено")
 

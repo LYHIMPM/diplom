@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 
-from . import views
+from . import views, api_views
 
 urlpatterns = [
     path('', views.premade),
@@ -21,4 +21,6 @@ urlpatterns = [
     path('login', views.login_view),
     path('logout', views.logout_view),
     path('register', views.registration_view),
+
+    path('api/makeOrder', api_views.make_order),
 ]

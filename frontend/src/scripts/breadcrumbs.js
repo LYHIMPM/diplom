@@ -1,7 +1,7 @@
 import * as Vue from 'vue/dist/vue.esm-browser';
 import {parsejson} from '../scripts/main';
 
-const breadcrumbs = Vue.createApp({
+let breadcrumbs = Vue.createApp({
     compilerOptions: {
         delimiters: ["[[", "]]"]
     },
