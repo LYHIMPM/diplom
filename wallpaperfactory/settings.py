@@ -28,11 +28,18 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+REPORTS_FOLDER = BASE_DIR.joinpath("data", "reports")
+MANAGER_GROUP_NAME = "Manager"
+ACCOUNTANT_GROUP_NAME = "Accountant"
+
+# ID типов доходов в базе данных. Если None, система не будет автоматически
+# регистрирвать доход при заказе
+INCOME_TYPE_SELL_PREMADE_ID = 1
+INCOME_TYPE_SELL_CUSTOM_ID = 2
 
 # Application definition
 AUTH_USER_MODEL = 'website.SiteUser'
 INSTALLED_APPS = [
-    'webpack_loader',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,15 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'website',
 ]
-
-WEBPACK_LOADER = {
-  'DEFAULT': {
-    'CACHE': not DEBUG,
-    'STATS_FILE': str(BASE_DIR.joinpath('frontend', 'webpack-stats.json')),
-    'POLL_INTERVAL': 0.1,
-    'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
-  }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -66,10 +64,11 @@ ROOT_URLCONF = 'wallpaperfactory.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'website/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'website.context_processors.initial_data',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -125,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 

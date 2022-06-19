@@ -1,0 +1,8 @@
+{% extends "website/vue/order.html" %}
+
+
+{% block payload %}
+    {{ block.super }}
+    {{ breadcrumbs | json_script:"breadcrumbs-payload" }}
+    {{ order | json_script:"order" }}    
+{% endblock %}

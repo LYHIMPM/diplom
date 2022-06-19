@@ -1,0 +1,14 @@
+{% extends "website/vue/store.html" %}
+
+
+{% block payload %}
+    {{ block.super }}
+    {{ page|json_script:"page" }}
+    {{ entries|json_script:"entries" }}
+    {{ tags|json_script:"tags" }}
+    {{ materials|json_script:"materials" }}
+    {{ breadcrumbs|json_script:"breadcrumbs-payload" }}
+    {{ entries_per_page|json_script:"entries_per_page" }}
+    {{ current_page|json_script:"current_page" }}
+    {{ pages_total|json_script:"pages_total" }}
+{% endblock %}

@@ -1,4 +1,9 @@
 {% extends "admin/base_site.html" %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Панель администратора Astra</a></h1>
+{% endblock %}
+
 {% block extrahead %}
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
@@ -6,8 +11,6 @@
 --body-bg: #282c34;
 --darkened-bg: #23272e;
 --textinput-bg: #272b31;
-
-
 --primary: #264b5d;
 --primary-fg: #eee;
 --body-fg: #eeeeee;

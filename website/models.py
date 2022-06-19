@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+import traceback
 from django.apps import apps
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin,
@@ -24,12 +25,12 @@ class Bill(models.Model):
     class Meta:
         managed = False
         db_table = 'bill'
+        verbose_name = "чек"
+        verbose_name_plural = "Чеки"
 
 
 class Expense(models.Model):
     amount = models.FloatField(verbose_name="Сумма")
-    description = models.TextField(
-        verbose_name="Описание", blank=True, default="")
     date = models.DateTimeField(verbose_name="Дата и время")
     expense_type = models.ForeignKey('ExpenseType', models.DO_NOTHING)
 
@@ -37,21 +38,32 @@ class Expense(models.Model):
         managed = False
         db_table = 'expense'
         verbose_name_plural = "Расходы"
+        verbose_name = "расход"
+        
+    def __str__(self) -> str:
+        return f"Расход {self.amount}₽ - {self.expense_type}"
 
 
 class ExpenseType(models.Model):
     type = models.CharField(max_length=128)
     name = models.CharField(max_length=256)
+    description = models.TextField(
+        verbose_name="Описание", blank=True, default="")
 
     class Meta:
         managed = False
         db_table = 'expense_type'
+        verbose_name_plural = "Типы расходов"
+        verbose_name = "тип расходов"
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Income(models.Model):
     order = models.ForeignKey(
         'Order', models.DO_NOTHING, blank=True, null=True)
-    income_type = models.ForeignKey('IncomeType', models.DO_NOTHING)
+    income_type = models.ForeignKey('IncomeType', models.DO_NOTHING, verbose_name="Тип дохода")
     amount = models.FloatField(verbose_name="Сумма")
     date = models.DateTimeField(verbose_name="Дата и время")
 
@@ -59,16 +71,25 @@ class Income(models.Model):
         managed = False
         db_table = 'income'
         verbose_name_plural = "Доходы"
+        verbose_name = "доход"
+
+    def __str__(self) -> str:
+        return f"Доход {self.amount}₽ - {self.income_type}"
 
 
 class IncomeType(models.Model):
     type = models.CharField(max_length=128)
     name = models.CharField(max_length=256)
+    description = models.TextField(verbose_name="Описание", blank=True, default="")
 
     class Meta:
         managed = False
         db_table = 'income_type'
+        verbose_name_plural = "Типы доходов"
+        verbose_name = "тип дохода"
 
+    def __str__(self) -> str:
+        return self.name
 
 class Order(models.Model):
     entry = models.ForeignKey('WallpapersEntry',
@@ -92,25 +113,45 @@ class Order(models.Model):
     price = models.FloatField(verbose_name="Полная цена")
     paid = models.FloatField(verbose_name="Сколько оплачено")
 
+    first_name = models.CharField(
+        max_length=255, verbose_name="Имя получателя")
+    last_name = models.CharField(max_length=255, verbose_name="Фамилия")
+    email = models.CharField(max_length=255, verbose_name="Email получателя")
+
     class Meta:
         managed = False
         db_table = 'order'
         verbose_name_plural = "Заказы"
+        verbose_name = "заказ"
 
     def __str__(self) -> str:
         return f"<Заказ '{self.id}'>"
+
+    @classmethod
+    def possible_payment_types(cls) -> list[int]:
+        return [0, 1]
 
     @property
     def is_custom(self):
         return self.entry == None
 
     def json(self):
+        d = {}
+        try:
+            d = json.loads(self.data)
+        except Exception:
+            traceback.print_exc()
+            print(self.data)
+
         return {
             "entry": self.entry.json() if not self.is_custom else None,
+            "address": self.address,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
             "date": self.date.timestamp(),
             "human_date": self.date.strftime("%d.%m.%Y"),
             "user_id": self.user_id,
-            "data": json.loads(self.data),
+            "data": d,
             "status": self.status,
             "price": self.price,
             "paid": self.paid,
@@ -144,6 +185,18 @@ class SiteUser(AbstractBaseUser, PermissionsMixin):
         managed = False
         db_table = 'website_siteuser'
         verbose_name_plural = "Пользователи"
+        verbose_name = "пользователя"
+
+    def json(self) -> dict:
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "first_name": self.first_name,
+            "second_name": self.second_name,
+            "last_name": self.last_name,
+            "groups": [g.name for g in self.groups.all()],
+        }
 
     @property
     def is_active(self):
@@ -162,6 +215,7 @@ class Tag(models.Model):
         managed = False
         db_table = 'tag'
         verbose_name_plural = "Тэги"
+        verbose_name = "тэг"
 
     def json(self):
         return {
@@ -180,6 +234,8 @@ class Chat(models.Model):
     class Meta:
         managed = False
         db_table = 'chat'
+        verbose_name_plural = "Переписки"
+        verbose_name = "переписка"
 
 
 class Message(models.Model):
@@ -187,11 +243,14 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, models.DO_NOTHING)
     sender = models.ForeignKey('Siteuser', models.DO_NOTHING)
     text = models.TextField()
-    datetime = models.DateTimeField(db_column='DATETIME')  # Field name made lowercase.
+    # Field name made lowercase.
+    datetime = models.DateTimeField(db_column='DATETIME')
 
     class Meta:
         managed = False
         db_table = 'message'
+        verbose_name_plural = "Сообщения"
+        verbose_name = "сообщение"
 
 
 class WallpaperMaterial(models.Model):
@@ -217,6 +276,7 @@ class WallpaperMaterial(models.Model):
         managed = False
         db_table = 'wallpaper_material'
         verbose_name_plural = "Материалы обоев"
+        verbose_name = "материал"
 
     def json(self):
         return {
@@ -234,12 +294,15 @@ class WallpaperMaterial(models.Model):
 
 class MaterialHasParameter(models.Model):
     # id = models.CharField(primary_key=True, max_length=45)
-    wallpaper_material = models.ForeignKey('WallpaperMaterial', models.DO_NOTHING)
-    material_parameter = models.ForeignKey('MaterialParameter', models.DO_NOTHING)
+    wallpaper_material = models.ForeignKey(
+        'WallpaperMaterial', models.DO_NOTHING)
+    material_parameter = models.ForeignKey(
+        'MaterialParameter', models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'material_has_parameter'
+        verbose_name = "связь материала с параметром"
 
 
 class MaterialParameter(models.Model):
@@ -250,6 +313,7 @@ class MaterialParameter(models.Model):
         managed = False
         db_table = 'material_parameter'
         verbose_name_plural = "Свойства материалов"
+        verbose_name = "параметр материала"
 
     def json(self):
         return {
@@ -267,8 +331,10 @@ class WallpapersEntry(models.Model):
     description = models.TextField(
         verbose_name="Описание", blank=True, default="")
     price = models.FloatField(verbose_name="Цена, ₽")
-    image_url = models.CharField(max_length=512,
-                                 verbose_name="Ссылка на изображение")
+    preview = models.CharField(max_length=512,
+                               verbose_name="Ссылка на изображение для предпросмотра")
+    image = models.CharField(max_length=512,
+                             verbose_name="Ссылка на изображение обоев")
     full_picture = models.BooleanField(
         default=False, verbose_name="Цельное изображение")
 
@@ -278,10 +344,22 @@ class WallpapersEntry(models.Model):
         verbose_name="Тэги"
     )
 
+    custom = models.BooleanField(
+        verbose_name="Это пользовательские обои из конструктора?")
+    img_size = models.FloatField(
+        blank=True, null=True, verbose_name="Конструктор: Размер")
+    img_x = models.FloatField(blank=True, null=True,
+                              verbose_name="Конструктор: Положение по X")
+    img_y = models.FloatField(blank=True, null=True,
+                              verbose_name="Конструктор: Положение по Y")
+    img_rot = models.FloatField(
+        blank=True, null=True, verbose_name="Конструктор: Поворот")
+
     class Meta:
         managed = False
         db_table = 'wallpapers_premade_entry'
-        verbose_name_plural = "Готовые обои"
+        verbose_name_plural = "Обои"
+        verbose_name = "обои"
 
     def json(self):
         return {
@@ -290,17 +368,39 @@ class WallpapersEntry(models.Model):
             "description": self.description,
             "full_picture": self.full_picture,
             "price": self.price,
-            "image_url": self.image_url,
+            "image_url": self.image,
+            "preview_url": self.preview,
             "main_image": self.main_image,
             "tags": [tag.json() for tag in self.tags.all()]
         }
 
     @property
     def main_image(self):
-        return "/static/wallpaperfactory/img/premade_wallpapers/"+self.image_url
+        return "/static/wallpaperfactory/img/premade_wallpapers/"+self.image
 
     def __str__(self) -> str:
         return f"<Обои {self.name}>"
+
+
+class OrderPlace(models.Model):
+    address = models.TextField(verbose_name="Адрес")
+    name = models.TextField(verbose_name="Название")
+
+    class Meta:
+        managed = False
+        db_table = 'order_place'
+        verbose_name_plural = "Пункты выдачи"
+        verbose_name = "пункт выдачи"
+
+    def __str__(self) -> str:
+        return f"<Пункт выдачи '{self.name}'>"
+
+    def json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "address": self.address
+        }
 
 
 class WallpapersPremadeEntryHasTag(models.Model):

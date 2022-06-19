@@ -1,0 +1,10 @@
+{% extends "website/vue/entry_details.html" %}
+
+
+{% block payload %}
+    {{ block.super }}
+    {{ breadcrumbs|json_script:"breadcrumbs-payload" }}
+    {{ entry|json_script:"entry" }}
+    {{ material_tags|json_script:"material_tags" }}
+    {{ materials|json_script:"materials" }}
+{% endblock %}
