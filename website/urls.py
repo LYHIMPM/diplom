@@ -17,6 +17,11 @@ urlpatterns = [
     path('logout', views.logout_view),
     path('register', views.registration_view),
 
+    path('constructor/upload', views.constructor_upload),
+    path('constructor/edit/<str:editor_hash>', views.constructor),
+    path('constructor/image/<str:editor_hash>', views.constructor_image),
+
+    path('api/getConstructorImage', api_views.get_constructor_image),
     path('api/getReports', api_views.get_reports),
     path('api/createReport', api_views.create_report),
     path('api/deleteReport', api_views.delete_report),

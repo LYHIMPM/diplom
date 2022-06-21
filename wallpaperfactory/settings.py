@@ -29,8 +29,15 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 REPORTS_FOLDER = BASE_DIR.joinpath("data", "reports")
+CONSTRUCTOR_IMAGES_FOLDER = BASE_DIR.joinpath("data", "constructor")
+CONSTRUCTOR_FORMATS = ["jpg", "jpeg", "png"]
 MANAGER_GROUP_NAME = "Manager"
 ACCOUNTANT_GROUP_NAME = "Accountant"
+
+# Доп. цена за обои при использовании конструктора. (Должна быть выше всех цен
+# на дизайны, т.к. пользователь может использовать картинку с дизайна в
+# конструкторе)
+CONSTRUCTOR_PRICE = 2500
 
 # ID типов доходов в базе данных. Если None, система не будет автоматически
 # регистрирвать доход при заказе

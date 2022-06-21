@@ -338,6 +338,9 @@ class WallpapersEntry(models.Model):
     full_picture = models.BooleanField(
         default=False, verbose_name="Цельное изображение")
 
+    custom_hash = models.CharField(max_length=32, blank=True, null=True,
+                                   verbose_name="UUID пользовательских обоев")
+
     tags = models.ManyToManyField(
         "Tag",
         through='WallpapersPremadeEntryHasTag',

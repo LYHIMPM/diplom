@@ -76,7 +76,6 @@ export default {
         }
     },
     created() {
-        console.log("Orders created");
         this.loadOrders();
     }
 }

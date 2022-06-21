@@ -13,3 +13,7 @@ class RegistrationForm(forms.Form):
     second_name = forms.CharField(max_length=64, min_length=2, label="", widget=forms.TextInput(attrs={'placeholder': 'Отчество'}))
 
     password = forms.CharField(max_length=16, min_length=3, required=True, label="", widget=forms.PasswordInput(attrs={'placeholder': 'Пароль'}))
+
+
+class ConstructorFileUploadForm(forms.Form):
+    file = forms.FileField()

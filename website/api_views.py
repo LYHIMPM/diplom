@@ -5,6 +5,7 @@ import os
 from pprint import pprint
 from typing import Optional
 import traceback
+from unicodedata import name
 
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Avg, Count, Max, Min, Sum
@@ -22,13 +23,13 @@ from .models import (Income, IncomeType, MaterialParameter, Order, OrderPlace, S
 from .generate_insight import generate_file
 
 from django.conf import settings
+from . import utils
 
 ENTRIES_PER_PAGE = 6
 
 ACCOUNTANT_GN = settings.ACCOUNTANT_GROUP_NAME
 MANAGER_GN = settings.MANAGER_GROUP_NAME
 ACC_MNGR_GNS = [ACCOUNTANT_GN, MANAGER_GN]
-
 
 
 class ErrorCodes:
@@ -50,7 +51,7 @@ class APIResponse(JsonResponse):
             }
         super().__init__({
             "success": int(ok),
-            "response": data,
+            **({"response": data} if error_code is None else {}),
             **err
         })
 
@@ -274,18 +275,35 @@ def get_premade(request: HttpRequest):
         }
     )
 
-def get_report_file_path(name: str) -> str:
+
+def _is_manager(request: HttpRequest) -> bool:
+    return request.user.is_authenticated and request.user.groups.filter(name=MANAGER_GN).exists()
+
+
+def _is_accountant(request: HttpRequest) -> bool:
+    return request.user.is_authenticated and request.user.groups.filter(name=ACCOUNTANT_GN).exists()
+
+
+def _is_acc_or_mngr(request: HttpRequest) -> bool:
+    return request.user.is_authenticated and request.user.groups.filter(name__in=[ACCOUNTANT_GN, MANAGER_GN]).exists()
+
+
+def _get_report_file_path(name: str) -> str:
     return str(settings.REPORTS_FOLDER.joinpath(name))
+
+def _get_reports() -> list[str]:
+    return [fn for fn in os.listdir(str(settings.REPORTS_FOLDER))
+            if fn.endswith(".xlsx")]
 
 
 def download_report(request: HttpRequest, name: str):
-    if not (request.user.is_authenticated and request.user.groups.filter(name__in=ACC_MNGR_GNS).exists()):
+    if not _is_acc_or_mngr(request):
         return HttpResponseForbidden()
 
     if name is None:
         return Http404()
 
-    filepath = get_report_file_path(name)
+    filepath = _get_report_file_path(name)
 
     if not os.path.exists(filepath):
         return Http404()
@@ -298,31 +316,49 @@ def get_order_places(request: HttpRequest):
 
 
 def get_reports(request: HttpRequest):
-    if not request.user.is_authenticated:
-        return HttpResponseForbidden()
-    path = str(settings.REPORTS_FOLDER)
-    return APISuccessResponse(
-        [fn for fn in os.listdir(path) if fn.endswith(".xlsx")]
-    )
+    if not _is_acc_or_mngr(request):
+        return APIErrorResponse(ErrorCodes.ACCESS_DENIED)
+    return APISuccessResponse(_get_reports())
 
 
 def create_report(request: HttpRequest):
-    if not (request.user.is_authenticated and request.user.groups.filter(name__in=ACC_MNGR_GNS).exists()):
+    if not _is_acc_or_mngr(request):
         return APIErrorResponse(ErrorCodes.ACCESS_DENIED)
 
     name = datetime.datetime.now().strftime('report-%Y-%m-%d-%H-%M.xlsx')
-    generate_file(get_report_file_path(name))
+    generate_file(_get_report_file_path(name))
     return APISuccessResponse(name)
 
 
 def delete_report(request: HttpRequest):
-    if not (request.user.is_authenticated and request.user.groups.filter(name__in=ACC_MNGR_GNS).exists()):
+    if not _is_acc_or_mngr(request):
         return APIErrorResponse(ErrorCodes.ACCESS_DENIED)
-    return APISuccessResponse()
+    try:
+        print(request.body)
+        filename = json.loads(request.body)["name"]
+        filepath = _get_report_file_path(filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            return APISuccessResponse(_get_reports())
+        return APIErrorResponse(ErrorCodes.WRONG_INPUT_DATA)
+    except Exception:
+        traceback.print_exc()
+        return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR)
+
+def get_constructor_image(request: HttpRequest):
+    if not request.user.is_authenticated:
+        return APIErrorResponse(ErrorCodes.ACCESS_DENIED)
+    try:
+        h = json.loads(request.body)["hash"]
+        f = open(utils.get_constructor_img_file_path_by_hash(h, "rb"))
+        return FileResponse(f)
+    except Exception:
+        traceback.print_exc()
+        return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR)
 
 
 def get_orders(request: HttpRequest):
-    if not request.user.is_authenticated:
+    if not _is_acc_or_mngr(request):
         return APIErrorResponse(ErrorCodes.ACCESS_DENIED)
     try:
         orders = Order.objects.filter(user_id=request.user.id)

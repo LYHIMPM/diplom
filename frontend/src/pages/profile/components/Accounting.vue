@@ -1,8 +1,5 @@
 <template>
 <div class="accounting-wrapper">
-    <template v-if="delete_modal_reportname != null">
-        <AreYouSureDelete :reportname="delete_modal_reportname" @deleted="closeAccountingReportDeleteModal" @closeModal="closeAccountingReportDeleteModal"/>
-    </template>
 
     <h3>Отчёты</h3>
 
@@ -16,11 +13,15 @@
     <p>Существующие отчёты:</p>
     <div class="reports-list">
         <img class="loading" v-if="loading_reports" src="../../../assets/img/loading.gif" alt="" />
-        <template v-for="reportname in reports.slice().reverse()">
+        <template v-for="reportname in reports">
             <div class="report">
                 <a :href="'/report/'+reportname" v-text="reportname"></a>
                 <p @click="deleteReport(reportname)" class="red">Удалить</p>
             </div>
+        </template>
+        <p v-if="reports_list_loading_error" class="red">Ошибка. Не удалось загрузить список отчётов.</p>
+        <template v-if="delete_modal_reportname != null">
+            <AreYouSureDelete :reportname="delete_modal_reportname" @deleted="onDeleted($event)" @closeModal="delete_modal_reportname = null"/>
         </template>
     </div>
 </div>
@@ -40,28 +41,34 @@ export default {
             loading_reports: true,
             loading_creating: false,
             delete_modal_reportname: null,
+            reports_list_loading_error: false,
         };
     },
     methods: {
         loadReports() {
+            this.reports = [];
             this.loading_reports = true;
             API.getReports().then(resp => {
-                console.log(resp);
                 if (resp.response != undefined) {
-                    this.reports = resp.response;
+                    this.reports = resp.response.slice().reverse();
                     this.loading_reports = false;
+                    this.reports_list_loading_error = false;
+                } else {
+                    this.reports_list_loading_error = true;
                 }
             });
         },
         createReport() {
             this.loading_creating = true;
             API.createReport().then(data => {
-                console.log(data);
                 if (data.response != undefined) {
-                    this.reports.push(data.response);
+                    this.reports.unshift(data.response);
                     this.loading_creating = false;
                 }
             });
+        },
+        onDeleted(event) {
+            this.loadReports();
         },
         deleteReport(report) {
             this.delete_modal_reportname = report;
@@ -71,7 +78,6 @@ export default {
         },
     },
     created() {
-        console.log("Orders created");
         this.loadReports();
     },
     components: { AreYouSureDelete }

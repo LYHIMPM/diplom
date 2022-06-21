@@ -1,10 +1,15 @@
+import os
+from typing import Optional
+from django.conf import settings
 from django.db.models import Avg, Count, Max, Min, Sum
 from django.db.models.query_utils import Q
-from django.http import HttpRequest, HttpResponseForbidden, JsonResponse
+from django.http import FileResponse, HttpRequest, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegistrationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
+from django.core.files.uploadedfile import UploadedFile
+from . import utils
 
 
 from .models import MaterialParameter, SiteUser, Tag, WallpaperMaterial, WallpapersEntry, Order
@@ -106,6 +111,51 @@ def create_order(request: HttpRequest):
             "entry": entry.json(),
             "price": (m_sq_count * material.price) + entry.price
         }
+    })
+
+
+def constructor_upload(request: HttpRequest):
+    breadcrumbs = [("Главная", "/")]
+    breadcrumbs.append(("Новый дизайн", request.get_full_path()))
+    err = None
+
+    if (request.method == "POST"):
+        img = request.FILES.get("image")
+        editor_hash = utils.process_uploaded_image(img)
+        if editor_hash in [-1, -2]:
+            err = "Ошиюка: Некорректный файл."
+        elif editor_hash == -3:
+            err = "Неизвестная ошибка. Попробуйте другой файл."
+
+        if err is None:
+            return redirect("/constructor/edit/"+editor_hash)
+
+    return render(request, "website/constructor_upload.html", {
+        "breadcrumbs": breadcrumbs,
+        "payload": {
+            "error": err
+        }
+    })
+
+
+def constructor_image(request: HttpRequest, editor_hash: str):
+    return FileResponse(open(
+        utils.get_constructor_img_file_path_by_hash(editor_hash),
+        "rb"
+    ))
+
+
+def constructor(request: HttpRequest, editor_hash: str):
+    breadcrumbs = [("Главная", "/")]
+    breadcrumbs.append(("Новый дизайн", request.get_full_path()))
+    return render(request, "website/constructor.html", {
+        "breadcrumbs": breadcrumbs,
+        "material_tags": [t.json() for t in MaterialParameter.objects.all()],
+        "materials": [m.json() for m in WallpaperMaterial.objects.all()],
+        "constructor_payload": {
+            "price": settings.CONSTRUCTOR_PRICE,
+            "hash": editor_hash
+        },
     })
 
 

@@ -21,7 +21,7 @@
             <p class="section-description">
                 Вы можете создать свой собственный дизайн, загрузив любое изображение и настроив его положение при помощи удобного конструктора, а затем заказать обои с созданным дизайном.
             </p>
-            <button>Попробовать</button>
+            <a href="/constructor/upload" class="button">Попробовать</a>
         </div>
     </div>
 </div>
@@ -104,7 +104,7 @@ export default {
             text-align: center;
         }
 
-        button {
+        button, a.button {
             width: 50%;
             height: 40px;
             align-self: center;

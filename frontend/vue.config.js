@@ -8,6 +8,18 @@ module.exports = defineConfig({
   // indexPath: '../../templates/website/vue/base.html', // relative to outputDir!
 
   pages: {
+    constructor: {
+      entry: "./src/pages/constructor/main.js",
+      template: "public/index.html",
+      filename: "../../../templates/website/vue/constructor.html",
+      chunks: ["chunk-vendors", "constructor"],
+    },
+    constructor_upload: {
+      entry: "./src/pages/constructor_upload/main.js",
+      template: "public/index.html",
+      filename: "../../../templates/website/vue/constructor_upload.html",
+      chunks: ["chunk-vendors", "constructor_upload"],
+    },
     iwantcustom: {
       entry: "./src/pages/iwantcustom/main.js",
       template: "public/index.html",

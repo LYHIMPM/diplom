@@ -11,7 +11,7 @@ export function parsejson(el_id, warning = true) {
     return JSON.parse(element.innerHTML);
 }
 
-function getCSRFToken() {
+export function getCSRFToken() {
     if (csrf_token == null)
         csrf_token = JSON.parse(document.getElementById("csrf_token").innerHTML);
     return csrf_token;
@@ -35,7 +35,6 @@ export async function apiRequest(url = '', data = {}, method='POST') {
     });
     return await response.json(); // parses JSON response into native JavaScript objects
 }
-
 
 export async function makeOrder(entry_id, material_id, m_sq_count,
                                 paymenttype, orderPlaceID, first_name,

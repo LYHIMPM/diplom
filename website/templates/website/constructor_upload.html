@@ -1,0 +1,8 @@
+{% extends "website/vue/constructor_upload.html" %}
+
+
+{% block payload %}
+    {{ block.super }}
+    {{ breadcrumbs | json_script:"breadcrumbs-payload" }}
+    {{ payload|json_script:"payload" }}
+{% endblock %}

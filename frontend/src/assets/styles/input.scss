@@ -32,7 +32,7 @@ label {
     user-select: none;
 }
 
-button, input[type="submit"] {
+button, input[type="submit"], a.button {
     background-color: var(--main-color-2);
     border-radius: var(--input-border-radius);
     font-size: 15px;
@@ -44,16 +44,19 @@ button, input[type="submit"] {
     outline: none;
     cursor: pointer;
     background-color: var(--second-color-3);
+    text-decoration: none;
+    text-align: center;
 }
    
-button:hover, input[type="submit"]:hover {
+button:hover, input[type="submit"]:hover, a.button:hover {
     background-color: var(--second-color-3-hover);
 }
    
-button:active, input[type="submit"]:active {
+button:active, input[type="submit"]:active, a.button:active {
     background-color: var(--second-color-3-active);
 }
 
+a.button:disabled,
 button:disabled,
 button[disabled] {
     background-color: #666666;
