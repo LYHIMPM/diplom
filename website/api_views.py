@@ -38,6 +38,8 @@ class ErrorCodes:
     WRONG_INPUT_DATA: int = 2
     LOGIN_ERROR_WRONG_DATA: int = 3
     ACCESS_DENIED: int = 4
+    EMAIL_ALREADY_REGISTERED: int = 5
+    USERNAME_ALREADY_REGISTERED: int = 6
 
 
 class APIResponse(JsonResponse):
@@ -134,6 +136,62 @@ def login_view(request: HttpRequest):
                                        "csrf_token": get_token(request)})
 
         raise ValueError("Wrong credentials")
+
+    except Exception:
+        traceback.print_exc()
+        return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR)
+
+
+
+def register(request: HttpRequest):
+    try:
+        data = json.loads(request.body)
+        email = data["email"].strip().replace(" ", "")
+        username = data["username"].strip().replace(" ", "")
+        password = data["password"].strip()
+        first_name = data["first_name"].strip().replace(" ", "")
+        last_name = data["last_name"].strip().replace(" ", "")
+        second_name = data["second_name"].strip().replace(" ", "")
+
+        def is_wrong(txt, min_len = 3, max_len = 16):
+            if len(txt) < min_len or len(txt) > max_len:
+                return True
+            return False
+
+        any_wrong = any([
+            is_wrong(email, 5, 127),
+            is_wrong(password, 6, 32),
+            is_wrong(username, 3, 16),
+            is_wrong(first_name, 2, 16),
+            is_wrong(last_name, 2, 16),
+            is_wrong(second_name, 2, 16),
+            not "@" in email,
+            not "." in email,
+        ])
+
+        if SiteUser.objects.filter(email=email).exists():
+            return APIErrorResponse(ErrorCodes.EMAIL_ALREADY_REGISTERED)
+
+        if SiteUser.objects.filter(username=username).exists():
+            return APIErrorResponse(ErrorCodes.USERNAME_ALREADY_REGISTERED)
+
+        if any_wrong:
+            return APIErrorResponse(ErrorCodes.WRONG_INPUT_DATA)
+
+        user: SiteUser = SiteUser.objects.create(
+            email=email,
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            second_name=second_name,
+        )
+        user.set_password(password)
+        user.save()
+
+        login(request, user)
+
+        return APISuccessResponse(user.json())
 
     except Exception:
         traceback.print_exc()

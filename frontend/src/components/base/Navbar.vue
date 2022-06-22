@@ -1,12 +1,14 @@
 <template>
 <nav>
     <template v-if="loginModalShown">
-        <Login @login="login($event)" @closeLoginModal="closeLoginModal" />
+        <Login @login="login($event)" @closeModal="closeModal" />
     </template>
 
     <div class="logo">
-        <h1>ASTRA</h1>
-        <p>ДИЗАЙНЕРСКИЕ ОБОИ</p>
+        <a href="/">
+            <h1>ASTRA</h1>
+            <p>ДИЗАЙНЕРСКИЕ ОБОИ</p>
+        </a>
     </div>
     <div class="navbar-links">
         <template v-for="p in pages">
@@ -27,8 +29,7 @@
 </template>
 
 <script>
-import * as utils from '../../assets/js/utils'
-import { getCurrentUser } from '../../assets/js/api'
+import { getCurrentUser, parsejson } from '../../assets/js/api'
 import Login from './Login'
 
 export default {
@@ -44,16 +45,16 @@ export default {
                 ["about", "О нас"]
             ],
             user: getCurrentUser(),
-            page: utils.parsejson("page", false),
+            page: parsejson("page", false),
             loginModalShown: false,
         }
     },
     methods: {
         login(event) {
             this.emit('login', event);
-            this.closeLoginModal();
+            this.closeModal();
         },
-        closeLoginModal() {
+        closeModal() {
             this.loginModalShown = false;
         },
         openLoginModal() {

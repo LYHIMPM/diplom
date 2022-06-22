@@ -17,6 +17,17 @@ export function getCSRFToken() {
     return csrf_token;
 }
 
+export async function register(username, first_name, last_name, second_name, email, password) {
+    return await apiRequest("/api/register", {
+        "username": username,
+        "first_name": first_name,
+        "last_name": last_name,
+        "second_name": second_name,
+        "email": email,
+        "password": password,
+    });
+}
+
 export async function apiRequest(url = '', data = {}, method='POST') {
     // Default options are marked with *
     const response = await fetch(url, {

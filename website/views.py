@@ -14,12 +14,17 @@ from . import utils
 
 from .models import MaterialParameter, SiteUser, Tag, WallpaperMaterial, WallpapersEntry, Order
 
+def _title(txt: str) -> str:
+    """ Форматирует заголовок страницы """
+    return f"{txt} - ASTRA - Студия дизайнерских обоев"
+
 
 def premade(request: HttpRequest):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("Готовые обои", "/premade"))
     return render(request, "website/store.html", {
         "breadcrumbs": breadcrumbs,
+        "title": _title("Главная"),
         "page": {"name": "premade"},
     })
 
@@ -32,6 +37,7 @@ def entry_details(request: HttpRequest, entry_id: str):
     breadcrumbs.append((entry.name, f"/premade/{entry.id}"))
 
     return render(request, "website/entry_details.html", {
+        "title": _title(entry.name),
         "entry": entry.json(),
         "breadcrumbs": breadcrumbs,
         "material_tags": [t.json() for t in MaterialParameter.objects.all()],
@@ -43,6 +49,7 @@ def iwantcustom(request: HttpRequest):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("Свой дизайн", "/custom"))
     return render(request, "website/iwantcustom.html", {
+        "title": _title("Индивидуальный дизайн"),
         "breadcrumbs": breadcrumbs,
         "page": {"name": "custom"},
     })
@@ -53,18 +60,9 @@ def about(request: HttpRequest):
     breadcrumbs.append(("О нас", "/about"))
 
     return render(request, "wallpaperfactory/about.html", {
+        "title": _title("О нас"),
         "breadcrumbs": breadcrumbs,
         "page": {"name": "about"},
-    })
-
-
-def sales(request: HttpRequest):
-    breadcrumbs = [("Главная", "/")]
-    breadcrumbs.append(("Акции", "/sales"))
-
-    return render(request, "wallpaperfactory/sales.html", {
-        "breadcrumbs": breadcrumbs,
-        "page": {"name": "sales"},
     })
 
 
@@ -75,6 +73,7 @@ def profile_info(request: HttpRequest):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append((f"Профиль {request.user.username}", "/profile"))
     return render(request, "website/vue/profile.html", {
+        "title": _title("Профиль"),
         "breadcrumbs": breadcrumbs,
         "page": {"name": "profile", "tab": "account"}
     })
@@ -84,6 +83,7 @@ def login_view(request: HttpRequest):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("Вход", "/login"))
     return render(request, "website/vue/login.html", {
+        "title": _title("Вход"),
         "breadcrumbs": breadcrumbs,
         "page": {"name": "login"},
     })
@@ -104,6 +104,7 @@ def create_order(request: HttpRequest):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("Заказ", request.get_full_path()))
     return render(request, "website/order.html", {
+        "title": _title("Заказ " + entry.name),
         "breadcrumbs": breadcrumbs,
         "order": {
             "m_sq_count": m_sq_count,
@@ -123,7 +124,7 @@ def constructor_upload(request: HttpRequest):
         img = request.FILES.get("image")
         editor_hash = utils.process_uploaded_image(img)
         if editor_hash in [-1, -2]:
-            err = "Ошиюка: Некорректный файл."
+            err = "Ошибка: Некорректный файл."
         elif editor_hash == -3:
             err = "Неизвестная ошибка. Попробуйте другой файл."
 
@@ -131,6 +132,7 @@ def constructor_upload(request: HttpRequest):
             return redirect("/constructor/edit/"+editor_hash)
 
     return render(request, "website/constructor_upload.html", {
+        "title": _title("Создать свой дизайн"),
         "breadcrumbs": breadcrumbs,
         "payload": {
             "error": err
@@ -149,6 +151,7 @@ def constructor(request: HttpRequest, editor_hash: str):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("Новый дизайн", request.get_full_path()))
     return render(request, "website/constructor.html", {
+        "title": _title("Конструктор обоев"),
         "breadcrumbs": breadcrumbs,
         "material_tags": [t.json() for t in MaterialParameter.objects.all()],
         "materials": [m.json() for m in WallpaperMaterial.objects.all()],
@@ -162,37 +165,3 @@ def constructor(request: HttpRequest, editor_hash: str):
 def logout_view(request: HttpRequest):
     logout(request)
     return redirect("/")
-
-
-def registration_view(request: HttpRequest):
-    data_is_wrong_str = "data_is_wrong"
-
-    data_is_wrong = int(request.session.get(data_is_wrong_str, 0))
-
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-
-        if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-
-            user = authenticate(request, username=username, password=password)
-
-            if user is not None:
-                login(request, user)
-                return redirect("/")
-            else:
-                request.session[data_is_wrong_str] = 1
-
-    breadcrumbs = [("Главная", "/")]
-    breadcrumbs.append(("Регистрация", "/register"))
-
-    if data_is_wrong:
-        del request.session[data_is_wrong_str]
-        request.session.modified = True
-
-    return render(request, "wallpaperfactory/register.html", {
-        "breadcrumbs": breadcrumbs,
-        "form": RegistrationForm(),
-        "data_is_wrong": data_is_wrong
-    })
