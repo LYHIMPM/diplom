@@ -153,7 +153,7 @@ a {
     font-size: 14px;
     transition: color .2s;
 }
-a:hover, p.clickable:hover {
+a:hover:not(.button), p.clickable:hover {
     color: var(--second-color-3-hover);
     cursor: pointer;
 }

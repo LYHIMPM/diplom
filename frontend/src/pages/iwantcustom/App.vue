@@ -13,7 +13,7 @@
                 <br>
                 Наши эксперты в области дизайна интерьеров создадут неповторимый дизайн специально для вас.
             </p>
-            <button>Написать</button>
+            <a href="/individual" class="button">Написать нам</a>
         </div>
         <div class="section custom-constructor">
             <img class="section-img" src="../../assets/img/puzzle.webp" alt="">
@@ -38,25 +38,6 @@ export default {
     components: {
         Navbar,
         Breadcrumbs
-    },
-    data() {
-        return {
-            order: utils.parsejson("order"),
-            first_name: API.getCurrentUser().first_name,
-            last_name: API.getCurrentUser().last_name,
-            email: API.getCurrentUser().email,
-            address: "",
-            paymenttype: 0
-        }
-    },
-    methods: {
-        getOrderData: function() {
-            return {
-                order: this.order,
-                address: this.address,
-                paymenttype: this.paymenttype
-            }
-        },
     }
 }
 </script>
@@ -106,7 +87,7 @@ export default {
 
         button, a.button {
             width: 50%;
-            height: 40px;
+            padding: 10px;
             align-self: center;
             justify-self: center;
         }
