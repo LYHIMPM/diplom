@@ -20,6 +20,10 @@ def process_uploaded_image(img: UploadedFile) -> Union[str, int]:
     fname = uuid.uuid4().hex
     path = settings.CONSTRUCTOR_IMAGES_FOLDER.joinpath(fname)
 
+    _path = str(settings.CONSTRUCTOR_IMAGES_FOLDER)
+    if not os.path.exists(_path):
+        os.makedirs(_path)
+
     with open(path, 'wb') as f:
         for chunk in img.chunks():
             f.write(chunk)

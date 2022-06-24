@@ -9,6 +9,7 @@
             <template v-for="t in Object.keys(all_tabs)">
                 <p class="tab" :class="{'current': current_tab == t}" v-text="all_tabs[t]" @click="selectTab(t)"></p>
             </template>
+            <a href="/admin">Администрирование</a>
             <a href="/logout" class="red">Выйти</a>
         </div>
 
@@ -83,5 +84,10 @@ export default {
 <style lang="scss">
 #app {
     display: flex;
+}
+.profile-tabs {
+    a {
+        margin: 10px;
+    }
 }
 </style>

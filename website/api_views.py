@@ -350,7 +350,10 @@ def _get_report_file_path(name: str) -> str:
     return str(settings.REPORTS_FOLDER.joinpath(name))
 
 def _get_reports() -> list[str]:
-    return [fn for fn in os.listdir(str(settings.REPORTS_FOLDER))
+    path = str(settings.REPORTS_FOLDER)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return [fn for fn in os.listdir(path)
             if fn.endswith(".xlsx")]
 
 
@@ -419,7 +422,7 @@ def get_orders(request: HttpRequest):
     if not _is_acc_or_mngr(request):
         return APIErrorResponse(ErrorCodes.ACCESS_DENIED)
     try:
-        orders = Order.objects.filter(user_id=request.user.id)
+        orders = Order.objects.filter(user_id=request.user.id).order_by("-date")
         return APISuccessResponse([o.json() for o in orders])
     except Exception:
         traceback.print_exc()
