@@ -72,8 +72,10 @@
         background-color: var(--main-color-1);
         color: var(--text-color-1);
     }
-    a.red {
+    a.red, a.admin {
         margin: 1em 0;
+    }
+    a.red {
         color: var(--red-color);
     }
 }

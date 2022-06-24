@@ -9,7 +9,7 @@
             <template v-for="t in Object.keys(all_tabs)">
                 <p class="tab" :class="{'current': current_tab == t}" v-text="all_tabs[t]" @click="selectTab(t)"></p>
             </template>
-            <a href="/admin">Администрирование</a>
+            <a v-if="showAdminPanelLink" class="admin" href="/admin">Администрирование</a>
             <a href="/logout" class="red">Выйти</a>
         </div>
 
@@ -57,6 +57,7 @@ export default {
                 "chats": "Переписки",
             },
             current_tab: "info",
+            showAdminPanelLink: false,
         }
     },
     methods: {
@@ -68,9 +69,11 @@ export default {
         let groups = API.getCurrentUser().groups;
         if (groups.includes("Accountant") || groups.includes("Manager")) {
             this.all_tabs.accounting = "Отчёты";
+            this.showAdminPanelLink = true;
         }
         if (groups.includes("Manager")) {
             this.all_tabs.managermessages = "Связь с клиентами";
+            this.showAdminPanelLink = true;
         }
         let path = location.pathname.substring(1).split("/");
         if (path.length > 1 && Object.keys(this.all_tabs).includes(path[1])) {
@@ -84,10 +87,5 @@ export default {
 <style lang="scss">
 #app {
     display: flex;
-}
-.profile-tabs {
-    a {
-        margin: 10px;
-    }
 }
 </style>
