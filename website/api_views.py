@@ -83,42 +83,57 @@ def edit_profile(request: HttpRequest):
         second_name = data.get("second_name")
         password = data.get("password")
 
+        if password == "":
+            password = None
+        if username == "":
+            username = None
+        if first_name == "":
+            first_name = None
+        if last_name == "":
+            last_name = None
+        if second_name == "":
+            second_name = None
+        if email == "":
+            email = None
+
         user = request.user
 
         if validate.username(username):
             user.username = username
-        else:
+        elif username is not None:
             err = "Указано некорректное имя пользователя"
     
         if validate.first_name(first_name):
             user.first_name = first_name
-        else:
+        elif first_name is not None:
             err = "Указано некорректное имя"
 
         if validate.second_name(second_name):
             user.second_name = second_name
-        else:
+        elif second_name is not None:
             err = "Указана некорректная фамилия"
 
         if validate.last_name(last_name):
             user.last_name = last_name
-        else:
+        elif last_name is not None:
             err = "Указано некорректное отчество"
 
         if validate.password(password):
             user.set_password(password)
-        else:
+        elif password is not None:
             err = "Указан некорректный пароль"
 
         if validate.email(email):
             user.email = email
-        else:
+        elif email is not None:
             err = "Указана некорректная почта"
 
         if err is not None:
             return APIErrorResponse(ErrorCodes.WRONG_INPUT_DATA, err)
 
         user.save()
+
+        return APISuccessResponse()
 
     except Exception:
         traceback.print_exc()

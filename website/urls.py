@@ -12,7 +12,6 @@ urlpatterns = [
     re_path(r'profile/.*', views.profile_info),
 
     path('createorder', views.create_order),
-    path('login', views.login_view),
     path('logout', views.logout_view),
 
     path('constructor/upload', views.constructor_upload),

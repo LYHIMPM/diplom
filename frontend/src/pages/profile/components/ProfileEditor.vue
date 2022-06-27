@@ -32,7 +32,8 @@
         </div>
     
         <div class="apply-segment">
-            <p class="err" v-text="error"></p>
+            <p v-if="msg == ''" class="err" v-text="error"></p>
+            <p v-else v-text="msg"></p>
             <button :disabled="someDataAreWrong" @click="applyChanges">Применить</button>
         </div>
     </div>
@@ -56,6 +57,7 @@ export default {
             password1: "",
             password2: "",
             error: null,
+            msg: ""
         }
     },
     computed: {
@@ -79,6 +81,7 @@ export default {
             ).then(data => {
                 if (data.response) {
                     this.error = "";
+                    this.msg = "Данные обновлены";
                 } else {
                     this.error = data.error.description;    
                 }

@@ -68,7 +68,7 @@ def about(request: HttpRequest):
 
 def profile_info(request: HttpRequest):
     if not request.user.is_authenticated:
-        return redirect("/login")
+        return redirect("/")
 
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append((f"Профиль {request.user.username}", "/profile"))
@@ -77,17 +77,6 @@ def profile_info(request: HttpRequest):
         "breadcrumbs": breadcrumbs,
         "page": {"name": "profile", "tab": "account"}
     })
-
-
-def login_view(request: HttpRequest):
-    breadcrumbs = [("Главная", "/")]
-    breadcrumbs.append(("Вход", "/login"))
-    return render(request, "website/vue/login.html", {
-        "title": _title("Вход"),
-        "breadcrumbs": breadcrumbs,
-        "page": {"name": "login"},
-    })
-
 
 def create_order(request: HttpRequest):
     try:
