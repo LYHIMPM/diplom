@@ -16,13 +16,16 @@ class WallpaperMaterialParameterInline(admin.TabularInline):
     fk_name = "wallpaper_material"
     extra = 0
 
+
 @admin.register(models.SiteUser)
 class SiteUserAdmin(admin.ModelAdmin):
     list_display = ["id", "username"]
 
+
 @admin.register(models.IncomeType)
 class IncomeTypeAdmin(admin.ModelAdmin):
     list_display = ["type", "name"]
+
 
 @admin.register(models.ExpenseType)
 class ExpenseTypeAdmin(admin.ModelAdmin):
@@ -56,7 +59,6 @@ class TagAdmin(admin.ModelAdmin):
 class OrderPlaceAdmin(admin.ModelAdmin):
     list_display = ["name", "address"]
     list_display_links = ['name']
-
 
 
 class CustomPremadeFilter(admin.SimpleListFilter):
@@ -114,6 +116,7 @@ class WallpaperMaterialAdmin(admin.ModelAdmin):
         if obj is not None:
             return format_html(f'<img src="{obj.main_image}" style="width: 80px">')
         return ""
+
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):

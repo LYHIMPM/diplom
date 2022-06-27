@@ -21,6 +21,7 @@ urlpatterns = [
 
     path('api/getConstructorImage', api_views.get_constructor_image),
     path('api/getReports', api_views.get_reports),
+    path('api/editProfile', api_views.edit_profile),
     path('api/createReport', api_views.create_report),
     path('api/deleteReport', api_views.delete_report),
     path('report/<str:name>', api_views.download_report),

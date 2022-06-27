@@ -12,7 +12,7 @@
                 <p>
                     Для создания фотообоев рекомендуется использовать изображения разрешением больше 1000 пикселей на 1 метр обоев.
                 </p>
-                <p>Поддерживаемые форматы: jpg, gif, jpeg</p>
+                <p>Поддерживаемые форматы: png, jpg, gif, jpeg</p>
             </div>
             <h4 class="err" v-if="payload.error" v-text="payload.error"></h4>
             <input type="hidden" name="csrfmiddlewaretoken" :value="getCSRFToken()">

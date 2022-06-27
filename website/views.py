@@ -59,7 +59,7 @@ def about(request: HttpRequest):
     breadcrumbs = [("Главная", "/")]
     breadcrumbs.append(("О нас", "/about"))
 
-    return render(request, "wallpaperfactory/about.html", {
+    return render(request, "website/about.html", {
         "title": _title("О нас"),
         "breadcrumbs": breadcrumbs,
         "page": {"name": "about"},
@@ -124,9 +124,9 @@ def constructor_upload(request: HttpRequest):
         img = request.FILES.get("image")
         editor_hash = utils.process_uploaded_image(img)
         if editor_hash in [-1, -2]:
-            err = "Ошибка: Некорректный файл."
+            err = "Ошибка: Некорректный файл"
         elif editor_hash == -3:
-            err = "Неизвестная ошибка. Попробуйте другой файл."
+            err = "Неизвестная ошибка. Попробуйте другой файл"
 
         if err is None:
             return redirect("/constructor/edit/"+editor_hash)

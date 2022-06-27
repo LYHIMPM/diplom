@@ -24,6 +24,7 @@ from .generate_insight import generate_file
 
 from django.conf import settings
 from . import utils
+from . import api_validators as validate
 
 ENTRIES_PER_PAGE = 6
 
@@ -68,7 +69,7 @@ class APISuccessResponse(APIResponse):
         super().__init__(True, data, None, None)
 
 
-def update_user_info(request: HttpRequest):
+def edit_profile(request: HttpRequest):
     """ Обновляет данные пользователя """
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
@@ -84,30 +85,32 @@ def update_user_info(request: HttpRequest):
 
         user = request.user
 
-        def validate(val: str, min_len: int, max_len: int) -> bool:
-            return val is not None and len(val) >= min_len and len(val) <= max_len
-
-        if validate(username, 3, 16):
+        if validate.username(username):
             user.username = username
         else:
             err = "Указано некорректное имя пользователя"
-        if validate(first_name, 2, 64):
+    
+        if validate.first_name(first_name):
             user.first_name = first_name
         else:
             err = "Указано некорректное имя"
-        if validate(second_name, 2, 64):
+
+        if validate.second_name(second_name):
             user.second_name = second_name
         else:
             err = "Указана некорректная фамилия"
-        if validate(last_name, 0, 64):
+
+        if validate.last_name(last_name):
             user.last_name = last_name
         else:
             err = "Указано некорректное отчество"
-        if validate(password, 3, 128):
+
+        if validate.password(password):
             user.set_password(password)
         else:
             err = "Указан некорректный пароль"
-        if validate(email, 5, 255) and "@" in email and "." in email:
+
+        if validate.email(email):
             user.email = email
         else:
             err = "Указана некорректная почта"
@@ -427,3 +430,18 @@ def get_orders(request: HttpRequest):
     except Exception:
         traceback.print_exc()
         return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR)
+
+# def edit_profile(request: HttpRequest):
+#     if not request.user.is_authenticated:
+#         return APIErrorResponse(ErrorCodes.NOT_LOGGED_IN)
+
+#     try:
+#         data = json.loads(request.body)
+#         first_name = data.get("first_name", None)
+#         second_name = data.get("second_name", None)
+#         last_name = data.get("last_name", None)
+#         email = data.get("email", None)
+#         password = data.get("password", None)
+#     except:
+#         traceback.print_exc()
+#         return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR)

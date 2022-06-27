@@ -18,7 +18,14 @@
             <p @click="registerShown = true" class="no-account">Нет аккаунта?</p>
         </div>
         <div>
-            <button @click="login">Войти</button>
+            <template v-if="loading">
+                <div class="loading">
+                    <img src="../../assets/img/loading.gif" alt="" />
+                </div>
+            </template>
+            <template v-else>
+                <button @click="login">Войти</button>
+            </template>
         </div>
     </div>
 </div>
@@ -40,11 +47,14 @@ export default {
             email: "",
             password: "",
             wrong: false,
+            loading: false,
         };
     },
     methods: {
         login() {
+            this.loading = true;
             login(this.email, this.password).then((data) => {
+                this.loading = false;
                 if (data.response == null) {
                     this.wrong = true;
                 }
@@ -90,6 +100,16 @@ export default {
 
         h2 {
             text-align: center;
+        }
+    }
+
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img {
+            width: 30px;
+            height: 30px;
         }
     }
 </style>

@@ -62,6 +62,16 @@ export async function makeOrder(entry_id, material_id, m_sq_count,
     });
 }
 
+export async function saveConstructorEntry(width, height, scale,
+                                           material_id) {
+        return await apiRequest("/api/makeOrder", {
+            "entry_id": entry_id,
+            "material_id": material_id,
+            "first_name": first_name,
+        });
+}
+
+
 export async function getOrderPlaces() {
     return await apiRequest("/api/getOrderPlaces");
 }
@@ -110,4 +120,15 @@ export function getCurrentUser() {
             currentUser = userdata;
     }
     return currentUser;
+}
+
+export async function editProfile(username, email, first_name, last_name, second_name, password) {
+    return await apiRequest("/api/editProfile", {
+        "first_name": first_name,
+        "second_name": second_name,
+        "last_name": last_name,
+        "email": email,
+        "password": password,
+        "username": username,
+    });
 }

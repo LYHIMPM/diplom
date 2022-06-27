@@ -1,0 +1,7 @@
+{% extends "website/vue/about.html" %}
+
+
+{% block payload %}
+    {{ block.super }}
+    {{ breadcrumbs | json_script:"breadcrumbs-payload" }}  
+{% endblock %}
