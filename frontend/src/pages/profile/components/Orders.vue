@@ -67,6 +67,7 @@ export default {
         loadOrders() {
             this.loading = true;
             API.getOrders().then(resp => {
+                this.loading = false;
                 if (resp.response != undefined) {
                     this.orders = resp.response;
                     this.loading = false;
