@@ -60,7 +60,7 @@ export default {
     data() {
         return {
             orders: [],
-            loading: true,
+            loading: false,
         }
     },
     methods: {
