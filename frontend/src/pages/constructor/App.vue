@@ -62,7 +62,16 @@
                         Итоговая цена:
                         <span class="price" v-text="price + ' ₽'"></span>
                     </h3>
-                    <button>Заказать</button>
+
+                    <template v-if="loading">
+                        <div class="loading">
+                            <img src="../../assets/img/loading.gif" alt="" />
+                        </div>
+                    </template>
+                    <template v-else>
+                        <p v-if="err" class="err" v-text="err"></p>
+                        <button @click="save">Заказать</button>
+                    </template>
                 </div>
             </div>
         </div>
@@ -101,6 +110,9 @@ export default {
             vpY: 1.0,
 
             currentMaterial: {},
+
+            loading: false,
+            err: null,
         }
     },
     computed: {
@@ -139,6 +151,7 @@ export default {
             this.wallHeight += d;
             this.calcViewportWidthHeight();
         },
+
         calcViewportWidthHeight: function () {
             let x = 1.0;
             let y = 1.0;
@@ -201,6 +214,29 @@ export default {
             this.vpX = (x * s * 100);
             this.vpY = (y * s * 100);
         },
+
+        get_create_order_uri: function (entry_id) {
+            const params = new URLSearchParams({
+                'm_sq_count': this.m_sq_count,
+                'entry': entry_id,
+                'material': this.currentMaterial.id
+            });
+            return '/createorder?' + params.toString();
+        },
+
+        save() {
+            this.loading = true;
+            API.createConstructorEntry(this.wallWidth, 
+                this.wallHeight, this.imgSize, this.payload.hash)
+            .then(data => {
+                this.loading = false;
+                if (data.response != null) {
+                    location.href = this.get_create_order_uri(data.response);
+                } else {
+                    this.err = "Неизвестная ошибка. Попробуйте позже.";
+                }
+            });
+        }
     },
     created: function () {
         this.currentMaterial = this.materials[0];
@@ -303,5 +339,15 @@ export default {
 
 .content-wrapper {
     flex: 1;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+        width: 30px;
+        height: 30px;
+    }
 }
 </style>

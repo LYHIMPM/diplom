@@ -352,9 +352,9 @@ class WallpapersEntry(models.Model):
     img_size = models.FloatField(
         blank=True, null=True, verbose_name="Конструктор: Размер")
     img_x = models.FloatField(blank=True, null=True,
-                              verbose_name="Конструктор: Положение по X")
+                              verbose_name="Конструктор: Ширина стены")
     img_y = models.FloatField(blank=True, null=True,
-                              verbose_name="Конструктор: Положение по Y")
+                              verbose_name="Конструктор: Высота стены")
     img_rot = models.FloatField(
         blank=True, null=True, verbose_name="Конструктор: Поворот")
 
@@ -379,6 +379,8 @@ class WallpapersEntry(models.Model):
 
     @property
     def main_image(self):
+        if self.custom_hash is not None or self.custom:
+            return self.image
         return "/static/wallpaperfactory/img/premade_wallpapers/"+self.image
 
     def __str__(self) -> str:

@@ -140,6 +140,39 @@ def edit_profile(request: HttpRequest):
         return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR, err)
 
 
+def create_constructor_entry(request: HttpRequest):
+    try:
+        data = json.loads(request.body)
+
+        scale = float(data["scale"])
+        width = float(data["wall_width"])
+        height = float(data["wall_height"])
+        editor_hash = data["editor_hash"]
+
+        img_url = "/constructor/image/"+editor_hash
+
+        desc = f"Создано в конструкторе обоев студии Astra\nКонструктор #{editor_hash}"
+        entry = WallpapersEntry.objects.create(
+            name="Пользовательский дизайн",
+            description=desc,
+            price=settings.CONSTRUCTOR_PRICE,
+            preview=img_url,
+            image=img_url,
+            full_picture=width > 1.0,
+            custom_hash=editor_hash,
+            custom=True,
+            img_size=scale,
+            img_x=width,
+            img_y=height,
+            img_rot=0,
+        )
+
+        return APISuccessResponse(entry.id)
+    except Exception:
+        traceback.print_exc()
+        return APIErrorResponse(ErrorCodes.UNKNOWN_ERROR)
+
+
 def login_view(request: HttpRequest):
     try:
         data = json.loads(request.body)

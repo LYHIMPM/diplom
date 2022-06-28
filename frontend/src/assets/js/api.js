@@ -62,12 +62,13 @@ export async function makeOrder(entry_id, material_id, m_sq_count,
     });
 }
 
-export async function saveConstructorEntry(width, height, scale,
-                                           material_id) {
-        return await apiRequest("/api/makeOrder", {
-            "entry_id": entry_id,
-            "material_id": material_id,
-            "first_name": first_name,
+export async function createConstructorEntry(wall_width, wall_height, scale,
+                                             editor_hash) {
+        return await apiRequest("/api/createConstructorEntry", {
+            "scale": scale,
+            "wall_width": wall_width,
+            "wall_height": wall_height,
+            "editor_hash": editor_hash,
         });
 }
 

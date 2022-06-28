@@ -18,6 +18,7 @@ urlpatterns = [
     path('constructor/edit/<str:editor_hash>', views.constructor),
     path('constructor/image/<str:editor_hash>', views.constructor_image),
 
+    path('api/createConstructorEntry', api_views.create_constructor_entry),
     path('api/getConstructorImage', api_views.get_constructor_image),
     path('api/getReports', api_views.get_reports),
     path('api/editProfile', api_views.edit_profile),
